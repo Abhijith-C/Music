@@ -17,8 +17,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('music'),
+        centerTitle: true,
+        elevation: 0,
+        foregroundColor: Colors.black,
+        backgroundColor: Colors.white,
+        title: Text('Music Player'),
       ),
       body: FutureBuilder<List<SongModel>>(
         // Default values:
@@ -51,20 +56,24 @@ class _HomeScreenState extends State<HomeScreen> {
           return ListView.builder(
             itemCount: item.data!.length,
             itemBuilder: (context, index) {
-              return ListTile(
-                onTap: () {
-                  play(songs, index);
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (ctx) => PlayerScreen()));
-                },
-                title: Text(item.data![index].title),
-                subtitle: Text(item.data![index].artist ?? "No Artist"),
-                trailing: const Icon(Icons.arrow_forward_rounded),
-                // This Widget will query/load image. Just add the id and type.
-                // You can use/create your own widget/method using [queryArtwork].
-                leading: QueryArtworkWidget(
-                  id: item.data![index].id,
-                  type: ArtworkType.AUDIO,
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: ListTile(
+                  onTap: () {
+                    play(songs, index);
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (ctx) => PlayerScreen()));
+                  },
+                  title: Text(item.data![index].title),
+                  subtitle: Text(item.data![index].artist ?? "No Artist"),
+                  trailing: const Icon(Icons.arrow_forward_rounded),
+                  // This Widget will query/load image. Just add the id and type.
+                  // You can use/create your own widget/method using [queryArtwork].
+                  leading: QueryArtworkWidget(
+                    nullArtworkWidget: Icon(Icons.music_note),
+                    id: item.data![index].id,
+                    type: ArtworkType.AUDIO,
+                  ),
                 ),
               );
             },
