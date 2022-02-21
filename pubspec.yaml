@@ -33,7 +33,9 @@ dependencies:
   curved_navigation_bar: ^1.0.3
   flutter:
     sdk: flutter
+  flutter_slidable: ^1.2.0
   on_audio_query: ^2.6.0
+  on_audio_room: ^2.2.1+1
   permission_handler: ^9.1.0
 
 dev_dependencies:

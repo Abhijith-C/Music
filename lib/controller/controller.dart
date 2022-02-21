@@ -6,5 +6,4 @@ void play(List<Audio> audio, int index) {
   assetsAudioPlayer.open(Playlist(audios: audio, startIndex: index),
       showNotification: true,
       notificationSettings: NotificationSettings(stopEnabled: false));
-  // print(widget.audio);
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:newmusic/controller/controller.dart';
-import 'package:newmusic/playScreen/playScreen.dart';
+import 'package:newmusic/functioins/functions.dart';
+import 'package:newmusic/screens/playScreen.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:on_audio_room/on_audio_room.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final OnAudioQuery _audioQuery = OnAudioQuery();
   final assetsAudioPlayer = AssetsAudioPlayer();
+  final OnAudioRoom _audioRoom = OnAudioRoom();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,12 +82,35 @@ class _HomeScreenState extends State<HomeScreen> {
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        SizedBox(
-                          width: 10,
+                        // SizedBox(
+                        //   width: 10,
+                        // ),
+                        IconButton(
+                          onPressed: () async {
+                            _audioRoom.addTo(
+                              RoomType.FAVORITES, // Specify the room type
+                              songmodel[index].getMap.toFavoritesEntity(),
+                              ignoreDuplicate: false, // Avoid the same song
+                            );
+                            bool isAdded = await _audioRoom.checkIn(
+                              RoomType.FAVORITES,
+                              songmodel[index].id,
+                            );
+                            print('$isAdded');
+                          },
+                          icon: Icon(
+                            Icons.favorite_outline,
+                            size: 18,
+                          ),
                         ),
-                        Icon(
-                          Icons.add,
-                        ),
+                        IconButton(
+                          onPressed: () {
+                            dialogBox(context);
+                          },
+                          icon: Icon(
+                            Icons.add,
+                          ),
+                        )
                       ],
                     ),
                     leading: QueryArtworkWidget(

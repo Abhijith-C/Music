@@ -1,14 +1,13 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:newmusic/favourite/favourite.dart';
-
-import 'package:newmusic/playScreen/playScreen.dart';
-
+import 'package:newmusic/screens/favourite.dart';
+import 'package:newmusic/screens/playlists.dart';
+import 'package:on_audio_room/on_audio_room.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'screens/homeScreen.dart';
 
-import 'homeScreen/homeScreen.dart';
-
-void main() {
+void main() async {
+  await OnAudioRoom().initRoom(RoomType.FAVORITES);
   runApp(MyApp());
 }
 
@@ -41,8 +40,8 @@ class _HomeState extends State<Home> {
   int currentIndex = 1;
   final screens = [
     Favourite(),
-    // PlayerScreen(),
     HomeScreen(),
+    Playlist(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -57,9 +56,9 @@ class _HomeState extends State<Home> {
         //animationDuration: Duration(milliseconds: 200),
         backgroundColor: Colors.grey.shade300,
         items: const <Widget>[
-          Icon(Icons.favorite, size: 30),
+          Icon(Icons.favorite_outline, size: 30),
+          Icon(Icons.home_outlined, size: 30),
           Icon(Icons.list, size: 30),
-          Icon(Icons.compare_arrows, size: 30),
         ],
         onTap: (index) {
           setState(() {

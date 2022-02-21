@@ -4,6 +4,7 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 
 import 'package:newmusic/controller/controller.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:on_audio_room/on_audio_room.dart';
 
 class PlayerScreen extends StatefulWidget {
   int? index = 0;
@@ -15,9 +16,13 @@ class PlayerScreen extends StatefulWidget {
 
 class _PlayerScreenState extends State<PlayerScreen> {
   final OnAudioQuery _audioQuery = OnAudioQuery();
-  bool? isPlaying;
+  final OnAudioRoom _audioRoom = OnAudioRoom();
   @override
   Widget build(BuildContext context) {
+    List<SongModel> songmodel = [];
+    _audioQuery.querySongs().then((value) {
+      songmodel = value;
+    });
     return Scaffold(
         appBar: AppBar(
           foregroundColor: Colors.black,
@@ -49,22 +54,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
                     SizedBox(
                       height: 20,
                     ),
-                    // ClipRRect(
-                    //   borderRadius: BorderRadius.circular(10),
-                    //   child: Image.network(
-                    //     'https://images.cinemaexpress.com/uploads/user/imagelibrary/2019/6/19/original/tovino-thomas-t.jpg',
-                    //     height: 250,
-                    //     width: 250,
-                    //     fit: BoxFit.cover,
-                    //   ),
-                    // ),
                     SizedBox(
                       height: 250,
                       width: 250,
                       child: QueryArtworkWidget(
                         artworkBorder: BorderRadius.circular(12),
-                        // artworkWidth: 150,
-                        // artworkHeight: 150,
                         artworkFit: BoxFit.cover,
                         nullArtworkWidget: const Icon(
                           Icons.music_note,
@@ -91,8 +85,16 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       }
                       //print('infos: $infos');
                       return Padding(
-                          padding: const EdgeInsets.symmetric(),
+                          padding: const EdgeInsets.symmetric(horizontal: 40),
                           child: ProgressBar(
+                            timeLabelTextStyle:
+                                TextStyle(color: Colors.grey[700]),
+                            timeLabelType: TimeLabelType.remainingTime,
+                            baseBarColor: Colors.grey[300],
+                            progressBarColor: Colors.grey[500],
+                            thumbColor: Colors.grey[700],
+                            barHeight: 2,
+                            thumbRadius: 5,
                             progress: infos.currentPosition,
                             total: infos.duration,
                             onSeek: (duration) {
@@ -130,7 +132,20 @@ class _PlayerScreenState extends State<PlayerScreen> {
                             },
                             icon: Icon(Icons.skip_next)),
                         IconButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              _audioRoom.addTo(
+                                RoomType.FAVORITES,
+                                songmodel[playing.index]
+                                    .getMap
+                                    .toFavoritesEntity(),
+                                ignoreDuplicate: false, // Avoid the same song
+                              );
+                              bool isAdded = await _audioRoom.checkIn(
+                                RoomType.FAVORITES,
+                                songmodel[playing.index].id,
+                              );
+                              print('$isAdded');
+                            },
                             icon: Icon(
                               Icons.favorite_outline,
                               size: 20,
