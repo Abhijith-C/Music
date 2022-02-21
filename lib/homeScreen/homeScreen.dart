@@ -17,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.settings_outlined))
@@ -37,7 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
         height: double.infinity,
         width: double.infinity,
         child: FutureBuilder<List<SongModel>>(
-          // Default values:
           future: _audioQuery.querySongs(
             sortType: null,
             orderType: OrderType.ASC_OR_SMALLER,
@@ -45,16 +44,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ignoreCase: true,
           ),
           builder: (context, item) {
-            // Loading content
             if (item.data == null)
               return Center(child: const CircularProgressIndicator());
 
-            // When you try "query" without asking for [READ] or [Library] permission
-            // the plugin will return a [Empty] list.
             if (item.data!.isEmpty) return const Text("Nothing found!");
-
-            // You can use [item.data!] direct or you can create a:
-            // List<SongModel> songs = item.data!;
 
             List<SongModel> songmodel = item.data!;
 
@@ -62,7 +55,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
             for (var song in songmodel) {
               songs.add(Audio.file(song.uri.toString(),
-                  metas: Metas(title: song.title, artist: song.artist)));
+                  metas: Metas(
+                      title: song.title,
+                      artist: song.artist,
+                      id: song.id.toString())));
             }
 
             return ListView.builder(
@@ -73,8 +69,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: ListTile(
                     onTap: () {
                       play(songs, index);
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (ctx) => PlayerScreen()));
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (ctx) => PlayerScreen(
+                                index: index,
+                              )));
                     },
                     title: Text(item.data![index].title),
                     subtitle: Text(item.data![index].artist ?? "No Artist"),
@@ -89,10 +87,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    // This Widget will query/load image. Just add the id and type.
-                    // You can use/create your own widget/method using [queryArtwork].
                     leading: QueryArtworkWidget(
-                      nullArtworkWidget: Icon(Icons.music_note),
+                      //nullArtworkWidget: Icon(Icons.music_note),
                       id: item.data![index].id,
                       type: ArtworkType.AUDIO,
                     ),

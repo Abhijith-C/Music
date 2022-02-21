@@ -1,5 +1,6 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:newmusic/favourite/favourite.dart';
 
 import 'package:newmusic/playScreen/playScreen.dart';
 
@@ -39,7 +40,8 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int currentIndex = 1;
   final screens = [
-    PlayerScreen(),
+    Favourite(),
+    // PlayerScreen(),
     HomeScreen(),
   ];
   @override
@@ -54,8 +56,8 @@ class _HomeState extends State<Home> {
         color: Colors.grey.shade200,
         //animationDuration: Duration(milliseconds: 200),
         backgroundColor: Colors.grey.shade300,
-        items: <Widget>[
-          Icon(Icons.add, size: 30),
+        items: const <Widget>[
+          Icon(Icons.favorite, size: 30),
           Icon(Icons.list, size: 30),
           Icon(Icons.compare_arrows, size: 30),
         ],

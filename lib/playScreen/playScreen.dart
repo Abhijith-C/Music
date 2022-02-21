@@ -3,17 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 
 import 'package:newmusic/controller/controller.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
 class PlayerScreen extends StatefulWidget {
-  PlayerScreen({
-    Key? key,
-  }) : super(key: key);
+  int? index = 0;
+  PlayerScreen({Key? key, this.index}) : super(key: key);
 
   @override
   _PlayerScreenState createState() => _PlayerScreenState();
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
+  final OnAudioQuery _audioQuery = OnAudioQuery();
+  bool? isPlaying;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,53 +34,69 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      '${playing!.playlist.current.metas.title}',
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[500]),
-                    ),
                     SizedBox(
-                      height: 20,
-                    ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.network(
-                        'https://images.cinemaexpress.com/uploads/user/imagelibrary/2019/6/19/original/tovino-thomas-t.jpg',
-                        height: 250,
-                        width: 250,
-                        fit: BoxFit.cover,
+                      height: 50,
+                      width: double.infinity,
+                      child: Text(
+                        '${playing!.playlist.current.metas.title}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[500]),
                       ),
                     ),
                     SizedBox(
                       height: 20,
                     ),
+                    // ClipRRect(
+                    //   borderRadius: BorderRadius.circular(10),
+                    //   child: Image.network(
+                    //     'https://images.cinemaexpress.com/uploads/user/imagelibrary/2019/6/19/original/tovino-thomas-t.jpg',
+                    //     height: 250,
+                    //     width: 250,
+                    //     fit: BoxFit.cover,
+                    //   ),
+                    // ),
+                    SizedBox(
+                      height: 250,
+                      width: 250,
+                      child: QueryArtworkWidget(
+                        artworkBorder: BorderRadius.circular(12),
+                        // artworkWidth: 150,
+                        // artworkHeight: 150,
+                        artworkFit: BoxFit.cover,
+                        nullArtworkWidget: const Icon(
+                          Icons.music_note,
+                          size: 200,
+                        ),
+                        id: int.parse(playing.playlist.current.metas.id!),
+                        type: ArtworkType.AUDIO,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     Text(
                       '${playing.playlist.current.metas.artist}',
-                      style: TextStyle(
-                          fontSize: 16,
-                          //fontWeight: FontWeight.bold,
-                          color: Colors.grey[500]),
+                      style: TextStyle(fontSize: 16, color: Colors.grey[500]),
                     ),
                     SizedBox(
-                      height: 20,
+                      height: 30,
                     ),
                     assetsAudioPlayer.builderRealtimePlayingInfos(
                         builder: (context, RealtimePlayingInfos? infos) {
                       if (infos == null) {
-                        return SizedBox();
+                        return const SizedBox();
                       }
                       //print('infos: $infos');
                       return Padding(
                           padding: const EdgeInsets.symmetric(),
                           child: ProgressBar(
                             progress: infos.currentPosition,
-                            // buffered: Duration(milliseconds: 2000),
                             total: infos.duration,
                             onSeek: (duration) {
                               assetsAudioPlayer.seek(duration);
-                              // print('User selected a new time: $duration');
                             },
                           ));
                     }),
@@ -96,13 +114,16 @@ class _PlayerScreenState extends State<PlayerScreen> {
                               assetsAudioPlayer.previous();
                             },
                             icon: Icon(Icons.skip_previous)),
-                        IconButton(
-                            onPressed: () {
-                              assetsAudioPlayer.playOrPause();
-                            },
-                            icon: Icon(
-                              Icons.play_arrow_rounded,
-                            )),
+                        assetsAudioPlayer.builderIsPlaying(
+                            builder: (context, isPlaying) {
+                          return IconButton(
+                              onPressed: () {
+                                assetsAudioPlayer.playOrPause();
+                              },
+                              icon: isPlaying
+                                  ? Icon(Icons.pause)
+                                  : Icon(Icons.play_arrow));
+                        }),
                         IconButton(
                             onPressed: () {
                               assetsAudioPlayer.next();
