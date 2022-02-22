@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:newmusic/functioins/functions.dart';
 import 'package:newmusic/screens/playlistInfo.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:on_audio_room/on_audio_room.dart';
@@ -26,6 +27,17 @@ class _PlaylistState extends State<Playlist> {
           foregroundColor: Colors.black,
           backgroundColor: Colors.grey[100],
           title: Text('Playlists'),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  createPlaylistFrom(context, () {
+                    setState(() {
+                      
+                    });
+                  });
+                },
+                icon: Icon(Icons.playlist_add))
+          ],
         ),
         body: Container(
             decoration: BoxDecoration(

@@ -6,7 +6,7 @@ final OnAudioQuery _audioQuery = OnAudioQuery();
 
 final OnAudioRoom _audioRoom = OnAudioRoom();
 
-void dialogBox(BuildContext context, int id, int inde, VoidCallback func) {
+void dialogBox(BuildContext context, int id, int inde) {
   List<SongModel> songmodel = [];
   _audioQuery.querySongs().then((value) {
     songmodel = value;
@@ -18,7 +18,7 @@ void dialogBox(BuildContext context, int id, int inde, VoidCallback func) {
               SimpleDialogOption(
                 onPressed: () {
                   Navigator.pop(context);
-                  createPlaylist(ctx, context);
+                  createPlaylist(ctx);
                 },
                 child: Text('New Playlist'),
               ),
@@ -45,11 +45,6 @@ void dialogBox(BuildContext context, int id, int inde, VoidCallback func) {
                                   playlistKey: item.data![index].key,
                                   ignoreDuplicate: false);
                               Navigator.pop(ctx);
-                              //print(item.data![index].dateAdded);
-                              // final x = _audioQuery.addToPlaylist(
-                              //     item.data![index].id, id);
-                              // print(x);
-                              //_audioQuery.queryAudiosFrom();
                             },
                             child: Text(item.data![index].playlistName)),
                         separatorBuilder: (ctx, index) => SizedBox(
@@ -62,7 +57,7 @@ void dialogBox(BuildContext context, int id, int inde, VoidCallback func) {
           ));
 }
 
-void createPlaylist(BuildContext ctx, BuildContext context) {
+void createPlaylist(BuildContext ctx) {
   final playlistNameController = TextEditingController();
   showDialog(
       barrierDismissible: false,
@@ -87,7 +82,41 @@ void createPlaylist(BuildContext ctx, BuildContext context) {
               TextButton(
                   onPressed: () {
                     createNewPlaylist(playlistNameController.text);
-                    Navigator.pop(context);
+                    Navigator.pop(ctx);
+                    // dialogBox(context);
+                  },
+                  child: Text('Ok'))
+            ],
+          ));
+}
+
+void createPlaylistFrom(BuildContext ctx, VoidCallback refresh) {
+  final playlistNameController = TextEditingController();
+  showDialog(
+      barrierDismissible: false,
+      context: ctx,
+      builder: (ctx1) => AlertDialog(
+            content: TextField(
+                controller: playlistNameController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  //filled: true,
+                  hintStyle: TextStyle(color: Colors.grey[600]),
+                  hintText: 'Playlist Name',
+                )),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                  },
+                  child: Text('Cancel')),
+              TextButton(
+                  onPressed: () {
+                    createNewPlaylist(playlistNameController.text);
+                    refresh();
+                    Navigator.pop(ctx);
                     // dialogBox(context);
                   },
                   child: Text('Ok'))

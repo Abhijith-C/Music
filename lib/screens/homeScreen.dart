@@ -82,9 +82,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // SizedBox(
-                        //   width: 10,
-                        // ),
                         IconButton(
                           onPressed: () async {
                             _audioRoom.addTo(
@@ -106,9 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         IconButton(
                           onPressed: () {
                             dialogBox(context,
-                                int.parse(songs[index].metas.id!), index, () {
-                              setState(() {});
-                            });
+                                int.parse(songs[index].metas.id!), index);
                           },
                           icon: Icon(
                             Icons.add,
