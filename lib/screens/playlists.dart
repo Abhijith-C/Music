@@ -12,10 +12,10 @@ class Playlist extends StatefulWidget {
 }
 
 class _PlaylistState extends State<Playlist> {
+  final OnAudioRoom _audioRoom = OnAudioRoom();
   @override
   Widget build(BuildContext context) {
     final OnAudioQuery _audioQuery = OnAudioQuery();
-    final OnAudioRoom _audioRoom = OnAudioRoom();
 
     //return Container();
     return Scaffold(
@@ -40,7 +40,7 @@ class _PlaylistState extends State<Playlist> {
                 builder: (context, item) {
                   if (item.data == null)
                     return Center(
-                      child: Text('Nothing Found'),
+                      child: const Text('Nothing Found'),
                     );
 
                   return ListView.separated(
@@ -48,7 +48,9 @@ class _PlaylistState extends State<Playlist> {
                             endActionPane: ActionPane(
                               children: [
                                 SlidableAction(
-                                  onPressed: (context) {},
+                                  onPressed: (context) {
+                                    dialog(context, item.data![index].key);
+                                  },
                                   backgroundColor: Colors.green.shade400,
                                   foregroundColor: Colors.white,
                                   icon: Icons.edit,
@@ -71,7 +73,7 @@ class _PlaylistState extends State<Playlist> {
                             ),
                             child: ListTile(
                               onTap: () {
-                                //final x = item.data[index;
+                                //final x = item.data[index].key;
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -80,6 +82,8 @@ class _PlaylistState extends State<Playlist> {
                                                   .data![index].playlistName,
                                               songs: item
                                                   .data![index].playlistSongs,
+                                              playlistKey:
+                                                  item.data![index].key,
                                             )));
                                 //final x = item.data![index].playlistSongs;
                                 // print(x);
@@ -102,5 +106,43 @@ class _PlaylistState extends State<Playlist> {
                       separatorBuilder: (ctx, index) => Divider(),
                       itemCount: item.data!.length);
                 })));
+  }
+
+  void dialog(BuildContext context, int key) {
+    final playlistNameController = TextEditingController();
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (ctx1) => AlertDialog(
+              content: TextField(
+                  controller: playlistNameController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    //filled: true,
+                    hintStyle: TextStyle(color: Colors.grey[600]),
+                    hintText: 'Playlist Name',
+                  )),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(ctx1);
+                    },
+                    child: Text('Cancel')),
+                TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _audioRoom.renamePlaylist(
+                            key, playlistNameController.text);
+                      });
+                      Navigator.pop(ctx1);
+                      //createNewPlaylist(playlistNameController.text);
+
+                      // dialogBox(context);
+                    },
+                    child: Text('Ok'))
+              ],
+            ));
   }
 }

@@ -7,9 +7,14 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:on_audio_room/on_audio_room.dart';
 
 class PlaylistInfo extends StatefulWidget {
+  int playlistKey;
   List<SongEntity> songs;
   String title;
-  PlaylistInfo({Key? key, required this.title, required this.songs})
+  PlaylistInfo(
+      {Key? key,
+      required this.title,
+      required this.songs,
+      required this.playlistKey})
       : super(key: key);
 
   @override
@@ -48,17 +53,11 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                 endActionPane: ActionPane(
                   children: [
                     SlidableAction(
-                      onPressed: (context) {},
-                      backgroundColor: Colors.green.shade400,
-                      foregroundColor: Colors.white,
-                      icon: Icons.edit,
-                      label: 'Edit',
-                    ),
-                    SlidableAction(
                       onPressed: (context) {
                         setState(() {
                           _audioRoom.deleteFrom(
-                              RoomType.FAVORITES, widget.songs[index].);
+                              RoomType.PLAYLIST, widget.songs[index].id,
+                              playlistKey: widget.playlistKey);
                         });
                       },
                       backgroundColor: Color(0xFFFE4A49),
