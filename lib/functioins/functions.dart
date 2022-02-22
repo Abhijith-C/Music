@@ -6,7 +6,7 @@ final OnAudioQuery _audioQuery = OnAudioQuery();
 
 final OnAudioRoom _audioRoom = OnAudioRoom();
 
-void dialogBox(BuildContext context, int id, int inde) {
+void dialogBox(BuildContext context, int id, int inde, VoidCallback func) {
   List<SongModel> songmodel = [];
   _audioQuery.querySongs().then((value) {
     songmodel = value;
@@ -30,7 +30,7 @@ void dialogBox(BuildContext context, int id, int inde) {
                     future: _audioRoom.queryPlaylists(),
                     builder: (context, item) {
                       //final x = item.data[0].id
-                      if (item.data == null)
+                      if (item.data == null || item.data!.isEmpty)
                         return Center(
                           child: Text('Nothing Found'),
                         );
@@ -41,7 +41,7 @@ void dialogBox(BuildContext context, int id, int inde) {
                         itemBuilder: (ctx, index) => GestureDetector(
                             onTap: () async {
                               _audioRoom.addTo(RoomType.PLAYLIST,
-                                  songmodel[inde].getMap.toFavoritesEntity(),
+                                  songmodel[inde].getMap.toSongEntity(),
                                   playlistKey: item.data![index].key,
                                   ignoreDuplicate: false);
                               Navigator.pop(ctx);

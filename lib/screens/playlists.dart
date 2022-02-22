@@ -25,7 +25,7 @@ class _PlaylistState extends State<Playlist> {
           elevation: 0,
           foregroundColor: Colors.black,
           backgroundColor: Colors.grey[100],
-          title: Text('Playlist'),
+          title: Text('Playlists'),
         ),
         body: Container(
             decoration: BoxDecoration(
@@ -38,7 +38,7 @@ class _PlaylistState extends State<Playlist> {
             child: FutureBuilder<List<PlaylistEntity>>(
                 future: _audioRoom.queryPlaylists(),
                 builder: (context, item) {
-                  if (item.data == null)
+                  if (item.data == null || item.data!.isEmpty)
                     return Center(
                       child: const Text('Nothing Found'),
                     );

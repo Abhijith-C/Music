@@ -28,7 +28,7 @@ class _FavouriteState extends State<Favourite> {
           elevation: 0,
           foregroundColor: Colors.black,
           backgroundColor: Colors.grey[100],
-          title: Text('Playlist'),
+          title: Text('Favourite'),
         ),
         body: Container(
             decoration: BoxDecoration(

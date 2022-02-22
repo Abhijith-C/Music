@@ -55,7 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
             List<SongModel> songmodel = item.data!;
 
             List<Audio> songs = [];
-            
 
             for (var song in songmodel) {
               songs.add(Audio.file(song.uri.toString(),
@@ -106,7 +105,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         IconButton(
                           onPressed: () {
-                            dialogBox(context, int.parse(songs[index].metas.id!),index);
+                            dialogBox(context,
+                                int.parse(songs[index].metas.id!), index, () {
+                              setState(() {});
+                            });
                           },
                           icon: Icon(
                             Icons.add,
