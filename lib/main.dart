@@ -7,7 +7,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'screens/homeScreen.dart';
 
 void main() async {
-  await OnAudioRoom().initRoom(RoomType.FAVORITES);
+  //await OnAudioRoom().initRoom(RoomType.FAVORITES);
+  await OnAudioRoom().initRoom();
   runApp(MyApp());
 }
 

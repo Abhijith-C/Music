@@ -106,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         IconButton(
                           onPressed: () {
-                            dialogBox(context, int.parse(songs[index].metas.id!));
+                            dialogBox(context, int.parse(songs[index].metas.id!),index);
                           },
                           icon: Icon(
                             Icons.add,

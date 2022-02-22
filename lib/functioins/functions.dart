@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:on_audio_room/on_audio_room.dart';
 
 final OnAudioQuery _audioQuery = OnAudioQuery();
 
-void dialogBox(BuildContext context, int id) {
+final OnAudioRoom _audioRoom = OnAudioRoom();
+
+void dialogBox(BuildContext context, int id, int inde) {
+  List<SongModel> songmodel = [];
+  _audioQuery.querySongs().then((value) {
+    songmodel = value;
+  });
   showDialog(
       context: context,
       builder: (ctx) => SimpleDialog(
@@ -19,8 +26,8 @@ void dialogBox(BuildContext context, int id) {
                   child: SizedBox(
                 height: 120,
                 width: 200,
-                child: FutureBuilder<List<PlaylistModel>>(
-                    future: _audioQuery.queryPlaylists(),
+                child: FutureBuilder<List<PlaylistEntity>>(
+                    future: _audioRoom.queryPlaylists(),
                     builder: (context, item) {
                       //final x = item.data[0].id
                       if (item.data == null)
@@ -32,17 +39,21 @@ void dialogBox(BuildContext context, int id) {
                         shrinkWrap: true,
                         itemCount: item.data!.length,
                         itemBuilder: (ctx, index) => GestureDetector(
-                            onTap: () {
-                              // print(',,,,,,,,,,,,,${item.data![index].id}');
+                            onTap: () async {
+                              _audioRoom.addTo(RoomType.PLAYLIST,
+                                  songmodel[inde].getMap.toFavoritesEntity(),
+                                  playlistKey: item.data![index].key,
+                                  ignoreDuplicate: false);
+                              Navigator.pop(ctx);
                               //print(item.data![index].dateAdded);
                               // final x = _audioQuery.addToPlaylist(
                               //     item.data![index].id, id);
                               // print(x);
                               //_audioQuery.queryAudiosFrom();
                             },
-                            child: Text(item.data![index].playlist)),
+                            child: Text(item.data![index].playlistName)),
                         separatorBuilder: (ctx, index) => SizedBox(
-                          height: 16,
+                          height: 18,
                         ),
                       );
                     }),
@@ -85,5 +96,6 @@ void createPlaylist(BuildContext ctx, BuildContext context) {
 }
 
 void createNewPlaylist(String name) {
-  _audioQuery.createPlaylist(name);
+  final x = _audioRoom.createPlaylist(name);
+  print(x);
 }

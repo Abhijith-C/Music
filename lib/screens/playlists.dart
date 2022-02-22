@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:newmusic/screens/playlistInfo.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:on_audio_room/on_audio_room.dart';
 
 class Playlist extends StatefulWidget {
   Playlist({Key? key}) : super(key: key);
@@ -13,6 +15,7 @@ class _PlaylistState extends State<Playlist> {
   @override
   Widget build(BuildContext context) {
     final OnAudioQuery _audioQuery = OnAudioQuery();
+    final OnAudioRoom _audioRoom = OnAudioRoom();
 
     //return Container();
     return Scaffold(
@@ -32,8 +35,8 @@ class _PlaylistState extends State<Playlist> {
             ),
             height: double.infinity,
             width: double.infinity,
-            child: FutureBuilder<List<PlaylistModel>>(
-                future: _audioQuery.queryPlaylists(),
+            child: FutureBuilder<List<PlaylistEntity>>(
+                future: _audioRoom.queryPlaylists(),
                 builder: (context, item) {
                   if (item.data == null)
                     return Center(
@@ -54,8 +57,8 @@ class _PlaylistState extends State<Playlist> {
                                 SlidableAction(
                                   onPressed: (context) {
                                     setState(() {
-                                      _audioQuery
-                                          .removePlaylist(item.data![index].id);
+                                      _audioRoom.deletePlaylist(
+                                          item.data![index].key);
                                     });
                                   },
                                   backgroundColor: Color(0xFFFE4A49),
@@ -67,7 +70,22 @@ class _PlaylistState extends State<Playlist> {
                               motion: ScrollMotion(),
                             ),
                             child: ListTile(
-                              onTap: ()  {
+                              onTap: () {
+                                //final x = item.data[index;
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (ctx) => PlaylistInfo(
+                                              title: item
+                                                  .data![index].playlistName,
+                                              songs: item
+                                                  .data![index].playlistSongs,
+                                            )));
+                                //final x = item.data![index].playlistSongs;
+                                // print(x);
+                                //list songs in playlist
+                                // final x = item.data![index].;
+                                // _audioRoom.addAllTo(RoomType.PLAYLIST, )
                                 //print(item.data![index].dateAdded);
                                 // final x = await _audioQuery.queryAudiosFrom(
                                 //     AudiosFromType.PLAYLIST,
@@ -76,7 +94,7 @@ class _PlaylistState extends State<Playlist> {
                               },
                               contentPadding: EdgeInsets.only(left: 20),
                               title: Text(
-                                item.data![index].playlist,
+                                item.data![index].playlistName,
                               ),
                               leading: Icon(Icons.music_note),
                             ),
