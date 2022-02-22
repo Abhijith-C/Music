@@ -67,6 +67,13 @@ class _PlaylistState extends State<Playlist> {
                               motion: ScrollMotion(),
                             ),
                             child: ListTile(
+                              onTap: ()  {
+                                //print(item.data![index].dateAdded);
+                                // final x = await _audioQuery.queryAudiosFrom(
+                                //     AudiosFromType.PLAYLIST,
+                                //     item.data![index].playlist);
+                                // print(x);
+                              },
                               contentPadding: EdgeInsets.only(left: 20),
                               title: Text(
                                 item.data![index].playlist,

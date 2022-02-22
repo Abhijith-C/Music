@@ -55,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
             List<SongModel> songmodel = item.data!;
 
             List<Audio> songs = [];
+            
 
             for (var song in songmodel) {
               songs.add(Audio.file(song.uri.toString(),
@@ -92,11 +93,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               songmodel[index].getMap.toFavoritesEntity(),
                               ignoreDuplicate: false, // Avoid the same song
                             );
-                            bool isAdded = await _audioRoom.checkIn(
-                              RoomType.FAVORITES,
-                              songmodel[index].id,
-                            );
-                            print('$isAdded');
+                            // bool isAdded = await _audioRoom.checkIn(
+                            //   RoomType.FAVORITES,
+                            //   songmodel[index].id,
+                            // );
+                            // print('$isAdded');
                           },
                           icon: Icon(
                             Icons.favorite_outline,
@@ -105,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         IconButton(
                           onPressed: () {
-                            dialogBox(context);
+                            dialogBox(context, int.parse(songs[index].metas.id!));
                           },
                           icon: Icon(
                             Icons.add,
