@@ -13,51 +13,53 @@ void dialogBox(BuildContext context, int id, int inde) {
   });
   showDialog(
       context: context,
-      builder: (ctx) =>  SimpleDialog(
-            children: [
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context);
-                  createPlaylist(ctx);
-                },
-                child: Text('New Playlist'),
-              ),
-              SimpleDialogOption(
-                  child: SizedBox(
-                height: 120,
-                width: 200,
-                child: FutureBuilder<List<PlaylistEntity>>(
-                    future: _audioRoom.queryPlaylists(),
-                    builder: (context, item) {
-                      //final x = item.data[0].id
-                      if (item.data == null || item.data!.isEmpty)
-                        return Center(
-                          child: Text('Nothing Found'),
-                        );
+      builder: (ctx) => StatefulBuilder(builder: (context, setState) {
+            return SimpleDialog(
+              children: [
+                SimpleDialogOption(
+                  onPressed: () {
+                    //Navigator.pop(context);
+                    createPlaylist(ctx, setState);
+                  },
+                  child: Text('New Playlist'),
+                ),
+                SimpleDialogOption(
+                    child: SizedBox(
+                  height: 120,
+                  width: 200,
+                  child: FutureBuilder<List<PlaylistEntity>>(
+                      future: _audioRoom.queryPlaylists(),
+                      builder: (context, item) {
+                        //final x = item.data[0].id
+                        if (item.data == null || item.data!.isEmpty)
+                          return Center(
+                            child: Text('Nothing Found'),
+                          );
 
-                      return ListView.separated(
-                        shrinkWrap: true,
-                        itemCount: item.data!.length,
-                        itemBuilder: (ctx, index) => GestureDetector(
-                            onTap: () async {
-                              _audioRoom.addTo(RoomType.PLAYLIST,
-                                  songmodel[inde].getMap.toSongEntity(),
-                                  playlistKey: item.data![index].key,
-                                  ignoreDuplicate: false);
-                              Navigator.pop(ctx);
-                            },
-                            child: Text(item.data![index].playlistName)),
-                        separatorBuilder: (ctx, index) => SizedBox(
-                          height: 18,
-                        ),
-                      );
-                    }),
-              ))
-            ],
-          ));
+                        return ListView.separated(
+                          shrinkWrap: true,
+                          itemCount: item.data!.length,
+                          itemBuilder: (ctx, index) => GestureDetector(
+                              onTap: () async {
+                                _audioRoom.addTo(RoomType.PLAYLIST,
+                                    songmodel[inde].getMap.toSongEntity(),
+                                    playlistKey: item.data![index].key,
+                                    ignoreDuplicate: false);
+                                Navigator.pop(ctx);
+                              },
+                              child: Text(item.data![index].playlistName)),
+                          separatorBuilder: (ctx, index) => SizedBox(
+                            height: 18,
+                          ),
+                        );
+                      }),
+                ))
+              ],
+            );
+          }));
 }
 
-void createPlaylist(BuildContext ctx) {
+void createPlaylist(BuildContext ctx, void Function(void Function()) setState) {
   final playlistNameController = TextEditingController();
   showDialog(
       barrierDismissible: false,
@@ -82,6 +84,7 @@ void createPlaylist(BuildContext ctx) {
               TextButton(
                   onPressed: () {
                     createNewPlaylist(playlistNameController.text);
+                    setState(() {});
                     Navigator.pop(ctx);
                     // dialogBox(context);
                   },
