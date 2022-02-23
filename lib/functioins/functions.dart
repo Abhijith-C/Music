@@ -13,7 +13,7 @@ void dialogBox(BuildContext context, int id, int inde) {
   });
   showDialog(
       context: context,
-      builder: (ctx) => SimpleDialog(
+      builder: (ctx) =>  SimpleDialog(
             children: [
               SimpleDialogOption(
                 onPressed: () {

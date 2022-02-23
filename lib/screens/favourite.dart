@@ -40,12 +40,12 @@ class _FavouriteState extends State<Favourite> {
             width: double.infinity,
             child: FutureBuilder<List<FavoritesEntity>>(
                 future: _audioRoom.queryFavorites(
-                  limit: 50,
+                 // limit: 50,
                   reverse: false,
-                  sortType: null, //  Null will use the [key] has sort.
+                 // sortType: null, 
                 ),
                 builder: (context, item) {
-                  if (item.data == null)
+                  if (item.data == null || item.data!.isEmpty)
                     return Center(
                       child: Text('Nothing Found'),
                     );

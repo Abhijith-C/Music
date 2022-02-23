@@ -20,109 +20,164 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.settings_outlined))
-        ],
-        centerTitle: true,
-        elevation: 0,
-        foregroundColor: Colors.black,
         backgroundColor: Colors.grey[100],
-        title: Text('Music Player'),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(18), topRight: Radius.circular(18)),
-          color: Colors.grey[200],
+        appBar: AppBar(
+          actions: [
+            IconButton(onPressed: () {}, icon: Icon(Icons.settings_outlined))
+          ],
+          centerTitle: true,
+          elevation: 0,
+          foregroundColor: Colors.black,
+          backgroundColor: Colors.grey[100],
+          title: const Text('Music Player'),
         ),
-        height: double.infinity,
-        width: double.infinity,
-        child: FutureBuilder<List<SongModel>>(
-          future: _audioQuery.querySongs(
-            sortType: null,
-            orderType: OrderType.ASC_OR_SMALLER,
-            uriType: UriType.EXTERNAL,
-            ignoreCase: true,
+        body: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(18), topRight: Radius.circular(18)),
+            color: Colors.grey[200],
           ),
-          builder: (context, item) {
-            if (item.data == null)
-              return Center(child: const CircularProgressIndicator());
+          height: double.infinity,
+          width: double.infinity,
+          child: FutureBuilder<List<SongModel>>(
+              future: _audioQuery.querySongs(
+                sortType: null,
+                orderType: OrderType.ASC_OR_SMALLER,
+                uriType: UriType.EXTERNAL,
+                ignoreCase: true,
+              ),
+              builder: (context, allSongs) {
+                if (allSongs.data == null)
+                  return Center(child: const CircularProgressIndicator());
 
-            if (item.data!.isEmpty) return const Text("Nothing found!");
+                if (allSongs.data!.isEmpty) return const Text("Nothing found!");
 
-            List<SongModel> songmodel = item.data!;
+                List<SongModel> songmodel = allSongs.data!;
 
-            List<Audio> songs = [];
+                List<Audio> songs = [];
 
-            for (var song in songmodel) {
-              songs.add(Audio.file(song.uri.toString(),
-                  metas: Metas(
-                      title: song.title,
-                      artist: song.artist,
-                      id: song.id.toString())));
-            }
+                for (var song in songmodel) {
+                  songs.add(Audio.file(song.uri.toString(),
+                      metas: Metas(
+                          title: song.title,
+                          artist: song.artist,
+                          id: song.id.toString())));
+                }
 
-            return ListView.builder(
-              itemCount: item.data!.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: ListTile(
-                    onTap: () {
-                      play(songs, index);
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (ctx) => PlayerScreen(
-                                index: index,
-                              )));
-                    },
-                    title: Text(item.data![index].title),
-                    subtitle: Text(item.data![index].artist ?? "No Artist"),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          onPressed: () async {
-                            _audioRoom.addTo(
-                              RoomType.FAVORITES, // Specify the room type
-                              songmodel[index].getMap.toFavoritesEntity(),
-                              ignoreDuplicate: false, // Avoid the same song
-                            );
-                            // bool isAdded = await _audioRoom.checkIn(
-                            //   RoomType.FAVORITES,
-                            //   songmodel[index].id,
-                            // );
-                            // print('$isAdded');
-                          },
-                          icon: Icon(
-                            Icons.favorite_outline,
-                            size: 18,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            dialogBox(context,
-                                int.parse(songs[index].metas.id!), index);
-                          },
-                          icon: Icon(
-                            Icons.add,
-                          ),
-                        )
-                      ],
-                    ),
-                    leading: QueryArtworkWidget(
-                      //nullArtworkWidget: Icon(Icons.music_note),
-                      id: item.data![index].id,
-                      type: ArtworkType.AUDIO,
-                    ),
+                return FutureBuilder<List<FavoritesEntity>>(
+                  future: _audioRoom.queryFavorites(
+                    limit: 50,
+                    reverse: false,
+                    sortType: null, //  Null will use the [key] has sort.
                   ),
+                  builder: (context, allFavourite) {
+                    if (allFavourite.data == null) {
+                      return const SizedBox();
+                    }
+                    // if (allFavourite.data!.isEmpty) {
+                    //   return const SizedBox();
+                    // }
+                    List<FavoritesEntity> favorites = allFavourite.data!;
+                    List<Audio> favSongs = [];
+
+                    for (var fSongs in favorites) {
+                      favSongs.add(Audio.file(fSongs.lastData,
+                          metas: Metas(
+                              title: fSongs.title,
+                              artist: fSongs.artist,
+                              id: fSongs.id.toString())));
+                    }
+                    return ListView.builder(
+                      itemCount: allSongs.data!.length,
+                      itemBuilder: (context, index) {
+                        bool isFav = false;
+                        int? key;
+                        for (var fav in favorites) {
+                          if (songs[index].metas.title == fav.title) {
+                            isFav = true;
+                            key = fav.key;
+                          }
+                        }
+                        // int key = 0;
+                        // for (var ff in favorites) {
+                        //   if (songs[index].metas.id == ff.) {
+                        //     isFav = true;
+                        //     key = ff.key;
+                        //   }
+                        // }
+
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: ListTile(
+                            onTap: () {
+                              play(songs, index);
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => PlayerScreen(
+                                        index: index,
+                                      )));
+                            },
+                            title: Text(allSongs.data![index].title),
+                            subtitle: Text(
+                                allSongs.data![index].artist ?? "No Artist"),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  onPressed: () async {
+                                    // print(isFav);
+                                    if (!isFav) {
+                                      _audioRoom.addTo(
+                                        RoomType
+                                            .FAVORITES, // Specify the room type
+                                        songmodel[index]
+                                            .getMap
+                                            .toFavoritesEntity(),
+                                        ignoreDuplicate:
+                                            false, // Avoid the same song
+                                      );
+                                    } else {
+                                      _audioRoom.deleteFrom(
+                                          RoomType.FAVORITES, key!);
+                                    }
+                                    setState(() {});
+                                    // bool isAdded = await _audioRoom.checkIn(
+                                    //   RoomType.FAVORITES,
+                                    //   songmodel[index].id,
+                                    // );
+                                    // print('...................$isAdded');
+                                  },
+                                  icon: Icon(
+                                    isFav
+                                        ? Icons.favorite
+                                        : Icons.favorite_outline,
+                                    size: 18,
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    dialogBox(
+                                        context,
+                                        int.parse(songs[index].metas.id!),
+                                        index);
+                                  },
+                                  icon: Icon(
+                                    Icons.add,
+                                  ),
+                                )
+                              ],
+                            ),
+                            leading: QueryArtworkWidget(
+                              //nullArtworkWidget: Icon(Icons.music_note),
+                              id: allSongs.data![index].id,
+                              type: ArtworkType.AUDIO,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 );
-              },
-            );
-          },
-        ),
-      ),
-    );
+              }),
+        ));
   }
 }
