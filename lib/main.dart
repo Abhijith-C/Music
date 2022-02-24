@@ -83,10 +83,10 @@ class _HomeState extends State<Home> {
           return (playing == null)
               ? SizedBox()
               : ListTile(
-                  onTap: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (ctx) => PlayerScreen()));
-                  },
+                  // onTap: () {
+                  //   Navigator.of(context).push(
+                  //       MaterialPageRoute(builder: (ctx) => PlayerScreen()));
+                  // },
                   leading: QueryArtworkWidget(
                     artworkBorder: BorderRadius.circular(12),
                     artworkFit: BoxFit.cover,
