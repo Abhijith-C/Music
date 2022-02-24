@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 
-class Settings extends StatelessWidget {
+ bool notification = true;
+class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
 
+  @override
+  State<Settings> createState() => _SettingsState();
+}
+
+class _SettingsState extends State<Settings> {
+ 
   @override
   Widget build(BuildContext context) {
     bool notifications = true;
@@ -36,14 +43,14 @@ class Settings extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.notifications_active),
               title: Text('Notifications'),
-              trailing: Switch(
-                inactiveTrackColor: Colors.grey.shade300,
-                inactiveThumbColor: Colors.grey,
-                activeTrackColor: Colors.grey.shade300,
-                activeColor: Colors.grey,
-                value: notifications,
-                onChanged: (value) {},
-              ),
+              trailing: Switch.adaptive(
+                  value: notification,
+                  onChanged: (value) {
+                    setState(() {
+                      notification = value;
+                    });
+                     print(notification);
+                  }),
             ),
             Divider(),
             ListTile(

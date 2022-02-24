@@ -5,14 +5,14 @@ import 'package:newmusic/screens/playlistInfo.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:on_audio_room/on_audio_room.dart';
 
-class Playlist extends StatefulWidget {
-  Playlist({Key? key}) : super(key: key);
+class Playlists extends StatefulWidget {
+  Playlists({Key? key}) : super(key: key);
 
   @override
-  State<Playlist> createState() => _PlaylistState();
+  State<Playlists> createState() => _PlaylistsState();
 }
 
-class _PlaylistState extends State<Playlist> {
+class _PlaylistsState extends State<Playlists> {
   final OnAudioRoom _audioRoom = OnAudioRoom();
   @override
   Widget build(BuildContext context) {
