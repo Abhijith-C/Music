@@ -199,6 +199,7 @@ class _SearchPageState extends State<SearchPage> {
                                           .push(MaterialPageRoute(
                                               builder: (ctx) => PlayerScreen(
                                                     index: index,
+                                                    songModel2: songModelList,
                                                   )));
                                     },
                                     title: Text(songs[index].metas.title!),

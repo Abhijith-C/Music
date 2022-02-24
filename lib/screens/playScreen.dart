@@ -9,7 +9,9 @@ import 'package:on_audio_room/on_audio_room.dart';
 
 class PlayerScreen extends StatefulWidget {
   int? index = 0;
-  PlayerScreen({Key? key, this.index}) : super(key: key);
+  List<SongModel>? songModel2;
+
+  PlayerScreen({Key? key, this.index, this.songModel2}) : super(key: key);
 
   @override
   _PlayerScreenState createState() => _PlayerScreenState();
@@ -21,9 +23,13 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   Widget build(BuildContext context) {
     List<SongModel> songmodel = [];
-    _audioQuery.querySongs().then((value) {
-      songmodel = value;
-    });
+    if (widget.songModel2 == null) {
+      _audioQuery.querySongs().then((value) {
+        songmodel = value;
+      });
+    } else {
+      songmodel = widget.songModel2!;
+    }
     return Scaffold(
         appBar: AppBar(
           foregroundColor: Colors.black,
