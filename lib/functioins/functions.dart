@@ -6,11 +6,11 @@ final OnAudioQuery _audioQuery = OnAudioQuery();
 
 final OnAudioRoom _audioRoom = OnAudioRoom();
 
-void dialogBox(BuildContext context, int id, int inde) {
-  List<SongModel> songmodel = [];
-  _audioQuery.querySongs().then((value) {
-    songmodel = value;
-  });
+void dialogBox(BuildContext context, int id, int inde, List<SongModel> songmodel) {
+  // List<SongModel> songmodel = [];
+  // _audioQuery.querySongs().then((value) {
+  //   songmodel = value;
+  // });
   showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(builder: (context, setState) {

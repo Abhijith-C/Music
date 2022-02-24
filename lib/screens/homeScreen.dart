@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:newmusic/controller/controller.dart';
 import 'package:newmusic/functioins/functions.dart';
 import 'package:newmusic/screens/playScreen.dart';
+import 'package:newmusic/screens/search.dart';
+import 'package:newmusic/screens/settings.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:on_audio_room/on_audio_room.dart';
@@ -23,7 +25,18 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.grey[100],
         appBar: AppBar(
           actions: [
-            IconButton(onPressed: () {}, icon: Icon(Icons.settings_outlined))
+            IconButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (ctx) => SearchPage()));
+                },
+                icon: Icon(Icons.search)),
+            IconButton(
+                onPressed: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (ctx) => Settings()));
+                },
+                icon: Icon(Icons.settings_outlined))
           ],
           centerTitle: true,
           elevation: 0,
@@ -158,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     dialogBox(
                                         context,
                                         int.parse(songs[index].metas.id!),
-                                        index);
+                                        index, songmodel);
                                   },
                                   icon: Icon(
                                     Icons.add,
