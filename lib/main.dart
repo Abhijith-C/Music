@@ -3,6 +3,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:newmusic/controller/controller.dart';
 import 'package:newmusic/screens/favourite.dart';
+import 'package:newmusic/screens/playScreen.dart';
 import 'package:newmusic/screens/playlists.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:on_audio_room/on_audio_room.dart';
@@ -82,6 +83,10 @@ class _HomeState extends State<Home> {
           return (playing == null)
               ? SizedBox()
               : ListTile(
+                  onTap: () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (ctx) => PlayerScreen()));
+                  },
                   leading: QueryArtworkWidget(
                     artworkBorder: BorderRadius.circular(12),
                     artworkFit: BoxFit.cover,

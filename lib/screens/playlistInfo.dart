@@ -48,42 +48,46 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
             ),
             height: double.infinity,
             width: double.infinity,
-            child: ListView.builder(
-              itemBuilder: (ctx, index) => Slidable(
-                endActionPane: ActionPane(
-                  children: [
-                    SlidableAction(
-                      onPressed: (context) {
-                        setState(() {
-                          _audioRoom.deleteFrom(
-                              RoomType.PLAYLIST, widget.songs[index].id,
-                              playlistKey: widget.playlistKey);
-                        });
-                      },
-                      backgroundColor: Color(0xFFFE4A49),
-                      foregroundColor: Colors.white,
-                      icon: Icons.delete,
-                      label: 'Delete',
+            child: playlistSong.isEmpty
+                ? const Center(
+                    child: Text('Nothing Found'),
+                  )
+                : ListView.builder(
+                    itemBuilder: (ctx, index) => Slidable(
+                      endActionPane: ActionPane(
+                        children: [
+                          SlidableAction(
+                            onPressed: (context) {
+                              setState(() {
+                                _audioRoom.deleteFrom(
+                                    RoomType.PLAYLIST, widget.songs[index].id,
+                                    playlistKey: widget.playlistKey);
+                              });
+                            },
+                            backgroundColor: Color(0xFFFE4A49),
+                            foregroundColor: Colors.white,
+                            icon: Icons.delete,
+                            label: 'Delete',
+                          ),
+                        ],
+                        motion: ScrollMotion(),
+                      ),
+                      child: ListTile(
+                        onTap: () {
+                          play(playlistSong, index);
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (ctx) => PlayerScreen()));
+                        },
+                        title: Text(widget.songs[index].title),
+                        subtitle: Text(widget.songs[index].artist!),
+                        leading: QueryArtworkWidget(
+                          id: widget.songs[index].id,
+                          type: ArtworkType.AUDIO,
+                        ),
+                      ),
+                      //itemCount: widget.songs.length,
                     ),
-                  ],
-                  motion: ScrollMotion(),
-                ),
-                child: ListTile(
-                  onTap: () {
-                    play(playlistSong, index);
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (ctx) => PlayerScreen()));
-                  },
-                  title: Text(widget.songs[index].title),
-                  subtitle: Text(widget.songs[index].artist!),
-                  leading: QueryArtworkWidget(
-                    id: widget.songs[index].id,
-                    type: ArtworkType.AUDIO,
-                  ),
-                ),
-                //itemCount: widget.songs.length,
-              ),
-              itemCount: widget.songs.length,
-            )));
+                    itemCount: widget.songs.length,
+                  )));
   }
 }

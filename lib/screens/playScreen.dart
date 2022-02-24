@@ -20,6 +20,9 @@ class PlayerScreen extends StatefulWidget {
 class _PlayerScreenState extends State<PlayerScreen> {
   final OnAudioQuery _audioQuery = OnAudioQuery();
   final OnAudioRoom _audioRoom = OnAudioRoom();
+
+    Color blueColor = Colors.blue;
+
   @override
   Widget build(BuildContext context) {
     List<SongModel> songmodel = [];
@@ -170,8 +173,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                     assetsAudioPlayer.playOrPause();
                                   },
                                   icon: isPlaying
-                                      ? Icon(Icons.pause)
-                                      : Icon(Icons.play_arrow));
+                                      ? Icon(Icons.pause,color: blueColor,)
+                                      : Icon(Icons.play_arrow, color: blueColor,));
                             }),
                             IconButton(
                                 onPressed: () {
