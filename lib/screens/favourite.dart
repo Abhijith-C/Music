@@ -2,19 +2,16 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:get/get.dart';
 import 'package:newmusic/controller/controller.dart';
+import 'package:newmusic/controller/player.dart';
 import 'package:newmusic/screens/playScreen.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:on_audio_room/on_audio_room.dart';
 
-class Favourite extends StatefulWidget {
-  Favourite({Key? key}) : super(key: key);
+class Favourite extends StatelessWidget {
+  final Controller controller = Get.put(Controller());
 
-  @override
-  State<Favourite> createState() => _FavouriteState();
-}
-
-class _FavouriteState extends State<Favourite> {
   @override
   Widget build(BuildContext context) {
     final OnAudioQuery _audioQuery = OnAudioQuery();
@@ -38,67 +35,55 @@ class _FavouriteState extends State<Favourite> {
             ),
             height: double.infinity,
             width: double.infinity,
-            child: FutureBuilder<List<FavoritesEntity>>(
-                future: _audioRoom.queryFavorites(
-                 // limit: 50,
-                  reverse: false,
-                 // sortType: null, 
-                ),
-                builder: (context, item) {
-                  if (item.data == null || item.data!.isEmpty)
-                    return Center(
-                      child: Text('Nothing Found'),
+            child: Obx(() {
+              if (controller.favorites == null || controller.favorites.isEmpty)
+                return Center(
+                  child: Text('Nothing Found'),
+                );
+
+              return ListView.separated(
+                  itemBuilder: (ctx, index) {
+                    var favSongs = controller.favSongs[index].metas;
+                    return Slidable(
+                      endActionPane:
+                          ActionPane(motion: ScrollMotion(), children: [
+                        SlidableAction(
+                          onPressed: (context) async {
+                            _audioRoom.deleteFrom(RoomType.FAVORITES,
+                                controller.favorites[index].key);
+
+                            // bool isAdded = await _audioRoom.checkIn(
+                            //   RoomType.FAVORITES,
+                            //   favorites[index].key,
+                            // );
+                            // print('$isAdded');
+                            controller.getFavorites();
+                          },
+                          backgroundColor: Color(0xFFFE4A49),
+                          foregroundColor: Colors.white,
+                          icon: Icons.delete,
+                          label: 'Delete',
+                        ),
+                      ]),
+                      child: ListTile(
+                        onTap: () {
+                          play(controller.favSongs, index);
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (ctx) => PlayerScreen()));
+                        },
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                        title: Text(
+                          favSongs.title!,
+                        ),
+                        leading: QueryArtworkWidget(
+                          id: int.parse(favSongs.id!),
+                          type: ArtworkType.AUDIO,
+                        ),
+                      ),
                     );
-                  List<FavoritesEntity> favorites = item.data!;
-                  List<Audio> favSongs = [];
-                  for (var songs in favorites) {
-                    favSongs.add(Audio.file(songs.lastData,
-                        metas: Metas(
-                            title: songs.title,
-                            artist: songs.artist,
-                            id: songs.id.toString())));
-                  }
-                  return ListView.separated(
-                      itemBuilder: (ctx, index) => Slidable(
-                            endActionPane:
-                                ActionPane(motion: ScrollMotion(), children: [
-                              SlidableAction(
-                                onPressed: (context) async {
-                                  setState(() {
-                                    _audioRoom.deleteFrom(RoomType.FAVORITES,
-                                        favorites[index].key);
-                                  });
-                                  // bool isAdded = await _audioRoom.checkIn(
-                                  //   RoomType.FAVORITES,
-                                  //   favorites[index].key,
-                                  // );
-                                  // print('$isAdded');
-                                },
-                                backgroundColor: Color(0xFFFE4A49),
-                                foregroundColor: Colors.white,
-                                icon: Icons.delete,
-                                label: 'Delete',
-                              ),
-                            ]),
-                            child: ListTile(
-                              onTap: () {
-                                play(favSongs, index);
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (ctx) => PlayerScreen()));
-                              },
-                              contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 20),
-                              title: Text(
-                                favorites[index].title,
-                              ),
-                              leading: QueryArtworkWidget(
-                                id: favorites[index].id,
-                                type: ArtworkType.AUDIO,
-                              ),
-                            ),
-                          ),
-                      separatorBuilder: (ctx, index) => Divider(),
-                      itemCount: item.data!.length);
-                })));
+                  },
+                  separatorBuilder: (ctx, index) => Divider(),
+                  itemCount: controller.favSongs.length);
+            })));
   }
 }

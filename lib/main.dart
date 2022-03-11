@@ -1,7 +1,9 @@
 import 'package:assets_audio_player/src/builders/player_builders_ext.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:newmusic/controller/controller.dart';
+import 'package:newmusic/controller/player.dart';
 import 'package:newmusic/screens/favourite.dart';
 import 'package:newmusic/screens/playScreen.dart';
 import 'package:newmusic/screens/playlists.dart';
@@ -25,7 +27,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // final Controller controller = Get.put(Controller());
     permission();
+
+    // controller.fetchSongs();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
@@ -75,28 +80,20 @@ class _HomeState extends State<Home> {
         ),
         bottomSheet:
             assetsAudioPlayer.builderCurrent(builder: (context, playing) {
-          // if (infos == null) {
-          //   return SizedBox();
-          // }
-
           final metas = playing.playlist.current.metas;
           return (playing == null)
               ? SizedBox()
               : ListTile(
-                  // onTap: () {
-                  //   Navigator.of(context).push(
-                  //       MaterialPageRoute(builder: (ctx) => PlayerScreen()));
-                  // },
                   leading: QueryArtworkWidget(
                     artworkBorder: BorderRadius.circular(12),
                     artworkFit: BoxFit.cover,
                     id: int.parse(playing.playlist.current.metas.id!),
                     type: ArtworkType.AUDIO,
                   ),
-                  title: Text(
-                    metas.title!,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  title: Text(metas.title!,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis)),
                   subtitle: Text(metas.artist!),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,

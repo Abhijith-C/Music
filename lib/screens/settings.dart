@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
- bool notification = true;
+bool notification = true;
+
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
 
@@ -9,7 +10,6 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
- 
   @override
   Widget build(BuildContext context) {
     bool notifications = true;
@@ -35,7 +35,9 @@ class _SettingsState extends State<Settings> {
         child: Column(
           children: [
             ListTile(
-              onTap: () {},
+              onTap: () {
+                _showAbout();
+              },
               leading: Icon(Icons.account_circle_outlined),
               title: Text('About'),
             ),
@@ -49,21 +51,21 @@ class _SettingsState extends State<Settings> {
                     setState(() {
                       notification = value;
                     });
-                     print(notification);
+                    print(notification);
                   }),
             ),
-            Divider(),
-            ListTile(
+           const Divider(),
+           const ListTile(
               leading: Icon(Icons.report_rounded),
               title: Text('Privacy Policy'),
             ),
-            Divider(),
-            ListTile(
+           const Divider(),
+           const ListTile(
               leading: Icon(Icons.flag),
               title: Text('Tearms and conditions'),
             ),
-            Divider(),
-            ListTile(
+           const Divider(),
+           const ListTile(
               leading: Icon(Icons.verified),
               title: Text('Version'),
               trailing: Text('1.01.01'),
@@ -71,6 +73,23 @@ class _SettingsState extends State<Settings> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<dynamic> _showAbout() {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AboutDialog(
+          applicationName: "Light Music",
+          applicationVersion: "Version 1.01.01",
+          applicationIcon: Image.asset(
+            'assets/images/logo.png',
+            width: 60.0,
+            height: 60.0,
+          ),
+        );
+      },
     );
   }
 }

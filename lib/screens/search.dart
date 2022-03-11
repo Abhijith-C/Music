@@ -1,30 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:newmusic/controller/controller.dart';
-import 'package:newmusic/functioins/functions.dart';
+import 'package:newmusic/controller/player.dart';
 import 'package:newmusic/screens/playScreen.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:on_audio_room/on_audio_room.dart';
 
-class SearchPage extends StatefulWidget {
-  const SearchPage({Key? key}) : super(key: key);
+class SearchPage extends StatelessWidget {
+  SearchPage({Key? key}) : super(key: key);
 
-  @override
-  _SearchPageState createState() => _SearchPageState();
-}
-
-class _SearchPageState extends State<SearchPage> {
-  final OnAudioQuery _audioQuery = OnAudioQuery();
-  final assetsAudioPlayer = AssetsAudioPlayer();
-  final OnAudioRoom _audioRoom = OnAudioRoom();
-  String searchTerm = '';
-  final searchController = TextEditingController();
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    searchController.clear();
-  }
+  final Controller controller = Get.put(Controller());
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +19,7 @@ class _SearchPageState extends State<SearchPage> {
           elevation: 0,
           foregroundColor: Colors.black,
           backgroundColor: Colors.grey[100],
-          title: const Text('Music Player'),
+          // title: const Text('Search Songs'),
         ),
         body: Container(
           decoration: BoxDecoration(
@@ -48,339 +32,112 @@ class _SearchPageState extends State<SearchPage> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  controller: searchController,
-                  onChanged: (value) {
-                    setState(() {
-                      searchTerm = value;
-                    });
-                  },
-                ),
-              ),
-              Expanded(
-                  child: (searchTerm.isEmpty)
-                      ? FutureBuilder<List<SongModel>>(
-                          future: _audioQuery.querySongs(
-                            sortType: null,
-                            orderType: OrderType.ASC_OR_SMALLER,
-                            uriType: UriType.EXTERNAL,
-                            ignoreCase: true,
+                  padding: const EdgeInsets.only(
+                      top: 5, left: 20, right: 20, bottom: 15),
+                  child: SizedBox(
+                    child: ListTile(
+                      leading: const Icon(
+                        Icons.search,
+                        color: Colors.black,
+                        size: 28,
+                      ),
+                      title: TextField(
+                        onChanged: (value) {
+                          controller.filterList(value);
+                          // print(controller.searchSongsList.length);
+                        },
+                        decoration: const InputDecoration(
+                          hintText: 'Search Songs...',
+                          hintStyle: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontStyle: FontStyle.italic,
                           ),
-                          builder: (context, allSongs) {
-                            if (allSongs.data == null)
-                              return Center(
-                                  child: const CircularProgressIndicator());
+                          border: InputBorder.none,
+                        ),
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                      ),
+                      trailing: Icon(Icons.close),
+                    ),
+                  )),
+              Expanded(child: Obx(
+                () {
+                  var songs = controller.searchSongsList;
+                  return ListView.separated(
+                    itemCount: songs.length,
+                    itemBuilder: (context, index) {
+                      var song = songs[index].metas;
+                      var songDetails = controller.searchSongsList[index].metas;
+                      return ListTile(
+                        onTap: () {
+                          play(songs, index);
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (ctx) => PlayerScreen()));
+                        },
+                        title:
+                            Text(song.title!, overflow: TextOverflow.ellipsis),
+                        subtitle: Text(song.artist ?? "No Artist"),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              onPressed: () async {
+                                controller.addToFav(controller.allSongs[index]);
+                                // print(isFav);
+                                // if (!isFav) {
+                                // _audioRoom.addTo(
+                                //     RoomType.FAVORITES, // Specify the room type
+                                //     controller.allSongs[index].getMap
+                                //         .toFavoritesEntity(),
+                                //     ignoreDuplicate: true); // Avoid the same song
+                                // controller.getFavorites();
 
-                            if (allSongs.data!.isEmpty)
-                              return const Text("Nothing found!");
-
-                            List<SongModel> songmodel = allSongs.data!;
-
-                            List<Audio> songs = [];
-
-                            for (var song in songmodel) {
-                              songs.add(Audio.file(song.uri.toString(),
-                                  metas: Metas(
-                                      title: song.title,
-                                      artist: song.artist,
-                                      id: song.id.toString())));
-                            }
-
-                            return FutureBuilder<List<FavoritesEntity>>(
-                              future: _audioRoom.queryFavorites(
-                                limit: 50,
-                                reverse: false,
-                                sortType:
-                                    null, //  Null will use the [key] has sort.
-                              ),
-                              builder: (context, allFavourite) {
-                                if (allFavourite.data == null) {
-                                  return const SizedBox();
-                                }
-                                // if (allFavourite.data!.isEmpty) {
-                                //   return const SizedBox();
+                                //   );
+                                // } else {
+                                //   _audioRoom.deleteFrom(RoomType.FAVORITES, key!);
                                 // }
-                                List<FavoritesEntity> favorites =
-                                    allFavourite.data!;
-                                List<Audio> favSongs = [];
 
-                                for (var fSongs in favorites) {
-                                  favSongs.add(Audio.file(fSongs.lastData,
-                                      metas: Metas(
-                                          title: fSongs.title,
-                                          artist: fSongs.artist,
-                                          id: fSongs.id.toString())));
-                                }
-                                return ListView.builder(
-                                  itemCount: allSongs.data!.length,
-                                  itemBuilder: (context, index) {
-                                    bool isFav = false;
-                                    int? key;
-                                    for (var fav in favorites) {
-                                      if (songs[index].metas.title ==
-                                          fav.title) {
-                                        isFav = true;
-                                        key = fav.key;
-                                      }
-                                    }
-                                    // int key = 0;
-                                    // for (var ff in favorites) {
-                                    //   if (songs[index].metas.id == ff.) {
-                                    //     isFav = true;
-                                    //     key = ff.key;
-                                    //   }
-                                    // }
-
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10),
-                                      child: ListTile(
-                                        onTap: () {
-                                          play(songs, index);
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (ctx) =>
-                                                      PlayerScreen(
-                                                        index: index,
-                                                      )));
-                                        },
-                                        title:
-                                            Text(allSongs.data![index].title),
-                                        subtitle: Text(
-                                            allSongs.data![index].artist ??
-                                                "No Artist"),
-                                        trailing: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            IconButton(
-                                              onPressed: () async {
-                                                // print(isFav);
-                                                if (!isFav) {
-                                                  _audioRoom.addTo(
-                                                    RoomType
-                                                        .FAVORITES, // Specify the room type
-                                                    songmodel[index]
-                                                        .getMap
-                                                        .toFavoritesEntity(),
-                                                    ignoreDuplicate:
-                                                        false, // Avoid the same song
-                                                  );
-                                                } else {
-                                                  _audioRoom.deleteFrom(
-                                                      RoomType.FAVORITES, key!);
-                                                }
-                                                setState(() {});
-                                                // bool isAdded = await _audioRoom.checkIn(
-                                                //   RoomType.FAVORITES,
-                                                //   songmodel[index].id,
-                                                // );
-                                                // print('...................$isAdded');
-                                              },
-                                              icon: Icon(
-                                                isFav
-                                                    ? Icons.favorite
-                                                    : Icons.favorite_outline,
-                                                size: 18,
-                                              ),
-                                            ),
-                                            IconButton(
-                                              onPressed: () {
-                                                dialogBox(
-                                                    context,
-                                                    int.parse(
-                                                        songs[index].metas.id!),
-                                                    index,
-                                                    songmodel);
-                                              },
-                                              icon: Icon(
-                                                Icons.add,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        leading: QueryArtworkWidget(
-                                          //nullArtworkWidget: Icon(Icons.music_note),
-                                          id: allSongs.data![index].id,
-                                          type: ArtworkType.AUDIO,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
+                                // bool isAdded = await _audioRoom.checkIn(
+                                //   RoomType.FAVORITES,
+                                //   songmodel[index].id,
+                                // );
+                                // print('...................$isAdded');
                               },
-                            );
-                          })
-                      : FutureBuilder<List<SongModel>>(
-                          future: _audioQuery.querySongs(
-                            sortType: null,
-                            orderType: OrderType.ASC_OR_SMALLER,
-                            uriType: UriType.EXTERNAL,
-                            ignoreCase: true,
-                          ),
-                          builder: (context, allSongs) {
-                            if (allSongs.data == null)
-                              return Center(
-                                  child: const CircularProgressIndicator());
-
-                            if (allSongs.data!.isEmpty)
-                              return const Text("Nothing found!");
-
-                            List<SongModel> songmodel = allSongs.data!;
-
-                            List<SongModel> songModelList = songmodel
-                                .where((song) => song.title
-                                    .toLowerCase()
-                                    .contains(searchTerm))
-                                .toList();
-
-                            List<Audio> songs = [];
-
-                            for (var song in songModelList) {
-                              songs.add(Audio.file(song.uri.toString(),
-                                  metas: Metas(
-                                      title: song.title,
-                                      artist: song.artist,
-                                      id: song.id.toString())));
-                            }
-
-                            return FutureBuilder<List<FavoritesEntity>>(
-                                future: _audioRoom.queryFavorites(
-                                  limit: 50,
-                                  reverse: false,
-                                  sortType:
-                                      null, //  Null will use the [key] has sort.
-                                ),
-                                builder: (context, allFavourite) {
-                                  if (allFavourite.data == null) {
-                                    return const SizedBox();
-                                  }
-                                  // if (allFavourite.data!.isEmpty) {
-                                  //   return const SizedBox();
-                                  // }
-                                  List<FavoritesEntity> favorites =
-                                      allFavourite.data!;
-                                  List<Audio> favSongs = [];
-
-                                  for (var fSongs in favorites) {
-                                    favSongs.add(Audio.file(fSongs.lastData,
-                                        metas: Metas(
-                                            title: fSongs.title,
-                                            artist: fSongs.artist,
-                                            id: fSongs.id.toString())));
-                                  }
-                                  return ListView.builder(
-                                    itemCount: songs.length,
-                                    itemBuilder: (context, index) {
-                                      bool isFav = false;
-                                      int? key;
-                                      for (var fav in favorites) {
-                                        if (songs[index].metas.title ==
-                                            fav.title) {
-                                          isFav = true;
-                                          key = fav.key;
-                                        }
-                                      }
-                                      // bool isFav = false;
-                                      // int? key;
-                                      // for (var fav in favorites) {
-                                      //   if (songs[index].metas.title ==
-                                      //       fav.title) {
-                                      //     isFav = true;
-                                      //     key = fav.key;
-                                      //   }
-                                      // }
-                                      // int key = 0;
-                                      // for (var ff in favorites) {
-                                      //   if (songs[index].metas.id == ff.) {
-                                      //     isFav = true;
-                                      //     key = ff.key;
-                                      //   }
-                                      // }
-
-                                      return Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        child: ListTile(
-                                          onTap: () {
-                                            play(songs, index);
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (ctx) =>
-                                                        PlayerScreen(
-                                                          index: index,
-                                                          songModel2:
-                                                              songModelList,
-                                                        )));
-                                          },
-                                          title:
-                                              Text(songs[index].metas.title!),
-                                          subtitle: Text(
-                                              songs[index].metas.artist ??
-                                                  "No Artist"),
-                                          trailing: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              IconButton(
-                                                onPressed: () async {
-                                                  // print(isFav);
-                                                  if (!isFav) {
-                                                    _audioRoom.addTo(
-                                                      RoomType
-                                                          .FAVORITES, // Specify the room type
-                                                      songModelList[index]
-                                                          .getMap
-                                                          .toFavoritesEntity(),
-                                                      ignoreDuplicate:
-                                                          false, // Avoid the same song
-                                                    );
-                                                  } else {
-                                                    _audioRoom.deleteFrom(
-                                                        RoomType.FAVORITES,
-                                                        key!);
-                                                  }
-                                                  setState(() {});
-                                                  // bool isAdded = await _audioRoom.checkIn(
-                                                  //   RoomType.FAVORITES,
-                                                  //   songmodel[index].id,
-                                                  // );
-                                                  // print('...................$isAdded');
-                                                },
-                                                icon: Icon(
-                                                  isFav
-                                                      ? Icons.favorite
-                                                      : Icons.favorite_outline,
-                                                  size: 18,
-                                                ),
-                                              ),
-                                              IconButton(
-                                                onPressed: () {
-                                                  dialogBox(
-                                                      context,
-                                                      int.parse(songs[index]
-                                                          .metas
-                                                          .id!),
-                                                      index,
-                                                      songModelList);
-                                                },
-                                                icon: Icon(
-                                                  Icons.add,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          leading: QueryArtworkWidget(
-                                            //nullArtworkWidget: Icon(Icons.music_note),
-                                            id: int.parse(
-                                                songs[index].metas.id!),
-                                            type: ArtworkType.AUDIO,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  );
-                                });
-                          })),
+                              icon: Icon(
+                                false ? Icons.favorite : Icons.favorite_outline,
+                                size: 18,
+                              ),
+                            ),
+                            // IconButton(
+                            //   onPressed: () {
+                            //     dialogBox(
+                            //         context,
+                            //         int.parse(songs.metas.id!),
+                            //         index,
+                            //         songmodel);
+                            //   },
+                            //   icon: Icon(
+                            //     Icons.add,
+                            //   ),
+                            // )
+                          ],
+                        ),
+                        leading: QueryArtworkWidget(
+                          //nullArtworkWidget: Icon(Icons.music_note),
+                          id: int.parse(
+                              controller.searchSongsList[index].metas.id!),
+                          type: ArtworkType.AUDIO,
+                        ),
+                      );
+                    },
+                    separatorBuilder: (context, index) => SizedBox(
+                      height: 10,
+                    ),
+                  );
+                },
+              ))
             ],
           ),
         ));
