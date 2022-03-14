@@ -9,55 +9,53 @@ final Controller controller = Get.put(Controller());
 void dialogBox(BuildContext context, int id, int inde, Audio song) {
   showDialog(
       context: context,
-      builder: (ctx) => StatefulBuilder(builder: (context, setState) {
-            return SimpleDialog(
-              children: [
-                SimpleDialogOption(
-                  onPressed: () {
-                    createPlaylist(ctx);
-                  },
-                  child: Column(
-                    children: const [
-                      Text(
-                        'Create New Playlist',
-                        style: TextStyle(color: Colors.blue),
-                      ),
-                      Divider()
-                    ],
-                  ),
+      builder: (ctx) => SimpleDialog(
+            children: [
+              SimpleDialogOption(
+                onPressed: () {
+                  createPlaylist(ctx);
+                },
+                child: Column(
+                  children: const [
+                    Text(
+                      'Create New Playlist',
+                      style: TextStyle(color: Colors.blue),
+                    ),
+                    Divider()
+                  ],
                 ),
-                SimpleDialogOption(
-                    child: SizedBox(
-                  height: 120,
-                  width: 200,
-                  child: GetBuilder<Controller>(builder: (item) {
-                    var ind = item.songs.indexOf(song);
-                    if (item.playlist.isEmpty) {
-                      return const Center(
-                        child: Text('Nothing Found'),
-                      );
-                    }
-                    return ListView.separated(
-                      shrinkWrap: true,
-                      itemCount: item.playlist.length,
-                      itemBuilder: (ctx, index) => GestureDetector(
-                          onTap: () async {
-                            _audioRoom.addTo(RoomType.PLAYLIST,
-                                item.allSongs[ind].getMap.toSongEntity(),
-                                playlistKey: item.playlist[index].key,
-                                ignoreDuplicate: false);
-                            Navigator.pop(ctx);
-                          },
-                          child: Text(item.playlist[index].playlistName)),
-                      separatorBuilder: (ctx, index) => const SizedBox(
-                        height: 18,
-                      ),
+              ),
+              SimpleDialogOption(
+                  child: SizedBox(
+                height: 120,
+                width: 200,
+                child: GetBuilder<Controller>(builder: (item) {
+                  var ind = item.songs.indexOf(song);
+                  if (item.playlist.isEmpty) {
+                    return const Center(
+                      child: Text('Nothing Found'),
                     );
-                  }),
-                ))
-              ],
-            );
-          }));
+                  }
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: item.playlist.length,
+                    itemBuilder: (ctx, index) => GestureDetector(
+                        onTap: () async {
+                          _audioRoom.addTo(RoomType.PLAYLIST,
+                              item.allSongs[ind].getMap.toSongEntity(),
+                              playlistKey: item.playlist[index].key,
+                              ignoreDuplicate: false);
+                          Navigator.pop(ctx);
+                        },
+                        child: Text(item.playlist[index].playlistName)),
+                    separatorBuilder: (ctx, index) => const SizedBox(
+                      height: 18,
+                    ),
+                  );
+                }),
+              ))
+            ],
+          ));
 }
 
 void createPlaylist(BuildContext ctx) {

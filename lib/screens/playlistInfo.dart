@@ -47,52 +47,56 @@ class PlaylistInfo extends StatelessWidget {
                           artist: song.artist,
                           id: song.id.toString())));
                 }
-                return ListView.builder(
-                  itemBuilder: (ctx, index) => Slidable(
-                    endActionPane: ActionPane(
-                      children: [
-                        SlidableAction(
-                          onPressed: (context) {
-                            playlistItems.deleteFromPlaylist(songs[index].id,
-                                playlistItems.playlist[playlistIndex].key);
-                          },
-                          backgroundColor: const Color(0xFFFE4A49),
-                          foregroundColor: Colors.white,
-                          icon: Icons.delete,
-                          label: 'Delete',
+                return playlistSong.isEmpty
+                    ? const Center(child: Text('No Songs Found'))
+                    : ListView.builder(
+                        itemBuilder: (ctx, index) => Slidable(
+                          endActionPane: ActionPane(
+                            children: [
+                              SlidableAction(
+                                onPressed: (context) {
+                                  playlistItems.deleteFromPlaylist(
+                                      songs[index].id,
+                                      playlistItems
+                                          .playlist[playlistIndex].key);
+                                },
+                                backgroundColor: const Color(0xFFFE4A49),
+                                foregroundColor: Colors.white,
+                                icon: Icons.delete,
+                                label: 'Delete',
+                              ),
+                            ],
+                            motion: const ScrollMotion(),
+                          ),
+                          child: ListTile(
+                            onTap: () {
+                              SongModel? song;
+                              for (var item in playlistItems.allSongs) {
+                                if (item.title ==
+                                    playlistItems.playlist[playlistIndex]
+                                        .playlistSongs[index].title) {
+                                  song = item;
+                                }
+                              }
+                              playFrom(playlistSong, index);
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => PlayerScreen(
+                                        songListSelector: song,
+                                      )));
+                            },
+                            title: Text(
+                              songs[index].title,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            subtitle: Text(songs[index].artist!),
+                            leading: QueryArtworkWidget(
+                              id: songs[index].id,
+                              type: ArtworkType.AUDIO,
+                            ),
+                          ),
                         ),
-                      ],
-                      motion: const ScrollMotion(),
-                    ),
-                    child: ListTile(
-                      onTap: () {
-                        SongModel? song;
-                        for (var item in playlistItems.allSongs) {
-                          if (item.title ==
-                              playlistItems.playlist[playlistIndex]
-                                  .playlistSongs[index].title) {
-                            song = item;
-                          }
-                        }
-                        playFrom(playlistSong, index);
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (ctx) => PlayerScreen(
-                                  songListSelector: song,
-                                )));
-                      },
-                      title: Text(
-                        songs[index].title,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle: Text(songs[index].artist!),
-                      leading: QueryArtworkWidget(
-                        id: songs[index].id,
-                        type: ArtworkType.AUDIO,
-                      ),
-                    ),
-                  ),
-                  itemCount: songs.length,
-                );
+                        itemCount: songs.length,
+                      );
               },
             )));
   }

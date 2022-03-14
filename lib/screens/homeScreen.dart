@@ -50,47 +50,52 @@ class HomeScreen extends StatelessWidget {
             child: GetBuilder<Controller>(
               init: Controller(),
               builder: (controll) {
-                return controll.allSongs.isEmpty ? const Center(child: CircularProgressIndicator(),) : ListView.builder(
-                  itemCount: controll.songs.length,
-                  itemBuilder: (context, index) {
-                    var song = controll.songs[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: ListTile(
-                        onTap: () {
-                          play(controll.songs[index]);
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (ctx) => PlayerScreen()));
-                        },
-                        title: Text(song.metas.title!,
-                            overflow: TextOverflow.ellipsis),
-                        subtitle: Text(song.metas.artist ?? "No Artist"),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                dialogBox(
-                                    context,
-                                    int.parse(
-                                        controll.songs[index].metas.id!),
-                                    index,controll.songs[index]);
+                return (controll.allSongs.isEmpty)
+                    ? const Center(
+                        child: Text('No Songs Found'),
+                      )
+                    : ListView.builder(
+                        itemCount: controll.songs.length,
+                        itemBuilder: (context, index) {
+                          var song = controll.songs[index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: ListTile(
+                              onTap: () {
+                                play(controll.songs[index]);
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (ctx) => PlayerScreen()));
                               },
-                              icon: const Icon(
-                                Icons.add,
+                              title: Text(song.metas.title!,
+                                  overflow: TextOverflow.ellipsis),
+                              subtitle: Text(song.metas.artist ?? "No Artist"),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      dialogBox(
+                                          context,
+                                          int.parse(
+                                              controll.songs[index].metas.id!),
+                                          index,
+                                          controll.songs[index]);
+                                    },
+                                    icon: const Icon(
+                                      Icons.add,
+                                    ),
+                                  )
+                                ],
                               ),
-                            )
-                          ],
-                        ),
-                        leading: QueryArtworkWidget(
-                          //nullArtworkWidget: Icon(Icons.music_note),
-                          id: int.parse(controll.songs[index].metas.id!),
-                          type: ArtworkType.AUDIO,
-                        ),
-                      ),
-                    );
-                  },
-                );
+                              leading: QueryArtworkWidget(
+                                //nullArtworkWidget: Icon(Icons.music_note),
+                                id: int.parse(controll.songs[index].metas.id!),
+                                type: ArtworkType.AUDIO,
+                              ),
+                            ),
+                          );
+                        },
+                      );
               },
             )));
   }

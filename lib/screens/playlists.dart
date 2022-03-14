@@ -6,7 +6,7 @@ import 'package:newmusic/functioins/functions.dart';
 import 'package:newmusic/screens/playlistInfo.dart';
 
 class Playlists extends StatelessWidget {
-  Playlists({Key? key}) : super(key: key);
+  const Playlists({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

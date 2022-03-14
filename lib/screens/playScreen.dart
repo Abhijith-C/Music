@@ -5,9 +5,6 @@ import 'package:get/get.dart';
 import 'package:newmusic/controller/controller.dart';
 import 'package:newmusic/functioins/player.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:on_audio_room/details/rooms/song_entity.dart';
-import 'package:on_audio_room/on_audio_room.dart';
-
 import '../functioins/functions.dart';
 
 class PlayerScreen extends StatelessWidget {

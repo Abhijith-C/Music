@@ -7,6 +7,8 @@ final OnAudioQuery _audioQuery = OnAudioQuery();
 final OnAudioRoom _audioRoom = OnAudioRoom();
 
 class Controller extends GetxController {
+  int homepageIndex = 1;
+  bool permissionStatus = false;
   List<Audio> songs = [];
   List<FavoritesEntity> favorites = [];
 
@@ -101,12 +103,27 @@ class Controller extends GetxController {
     update();
   }
 
+  requestPermission() async {
+    permissionStatus = await _audioQuery.permissionsStatus();
+    if (permissionStatus) {
+    } else {
+      permissionStatus = await _audioQuery.permissionsRequest();
+    }
+    fetchSongs();
+    searchSongsList.value = songs;
+    getFavorites();
+    getPlaylist();
+    update();
+  }
+
+  void changeHomepageIndex(int index) {
+    homepageIndex = index;
+    update();
+  }
+
   @override
   void onInit() {
     super.onInit();
-    fetchSongs();
-    getFavorites();
-    searchSongsList.value = songs;
-    getPlaylist();
+    requestPermission();
   }
 }
