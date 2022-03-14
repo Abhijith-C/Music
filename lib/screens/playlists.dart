@@ -1,22 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:get/get.dart';
+import 'package:newmusic/controller/controller.dart';
 import 'package:newmusic/functioins/functions.dart';
 import 'package:newmusic/screens/playlistInfo.dart';
-import 'package:on_audio_query/on_audio_query.dart';
-import 'package:on_audio_room/on_audio_room.dart';
 
-class Playlists extends StatefulWidget {
+class Playlists extends StatelessWidget {
   Playlists({Key? key}) : super(key: key);
 
   @override
-  State<Playlists> createState() => _PlaylistsState();
-}
-
-class _PlaylistsState extends State<Playlists> {
-  final OnAudioRoom _audioRoom = OnAudioRoom();
-  @override
   Widget build(BuildContext context) {
-    final OnAudioQuery _audioQuery = OnAudioQuery();
+    // final OnAudioQuery _audioQuery = OnAudioQuery();
 
     //return Container();
     return Scaffold(
@@ -26,98 +20,80 @@ class _PlaylistsState extends State<Playlists> {
           elevation: 0,
           foregroundColor: Colors.black,
           backgroundColor: Colors.grey[100],
-          title: Text('Playlists'),
+          title: const Text('Playlists'),
           actions: [
             IconButton(
                 onPressed: () {
-                  createPlaylistFrom(context, () {
-                    setState(() {
-                      
-                    });
-                  });
+                  createPlaylistFrom(context, () {});
                 },
-                icon: Icon(Icons.playlist_add))
+                icon: const Icon(Icons.playlist_add))
           ],
         ),
         body: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(18), topRight: Radius.circular(18)),
               color: Colors.grey[200],
             ),
             height: double.infinity,
             width: double.infinity,
-            child: FutureBuilder<List<PlaylistEntity>>(
-                future: _audioRoom.queryPlaylists(),
-                builder: (context, item) {
-                  if (item.data == null || item.data!.isEmpty)
-                    return Center(
-                      child: const Text('Nothing Found'),
-                    );
-
-                  return ListView.separated(
-                      itemBuilder: (ctx, index) => Slidable(
-                            endActionPane: ActionPane(
-                              children: [
-                                SlidableAction(
-                                  onPressed: (context) {
-                                    dialog(context, item.data![index].key);
-                                  },
-                                  backgroundColor: Colors.green.shade400,
-                                  foregroundColor: Colors.white,
-                                  icon: Icons.edit,
-                                  label: 'Edit',
-                                ),
-                                SlidableAction(
-                                  onPressed: (context) {
-                                    setState(() {
-                                      _audioRoom.deletePlaylist(
-                                          item.data![index].key);
-                                    });
-                                  },
-                                  backgroundColor: Color(0xFFFE4A49),
-                                  foregroundColor: Colors.white,
-                                  icon: Icons.delete,
-                                  label: 'Delete',
-                                ),
-                              ],
-                              motion: ScrollMotion(),
-                            ),
-                            child: ListTile(
-                              onTap: () {
-                                //final x = item.data[index].key;
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (ctx) => PlaylistInfo(
-                                              title: item
-                                                  .data![index].playlistName,
-                                              songs: item
-                                                  .data![index].playlistSongs,
-                                              playlistKey:
-                                                  item.data![index].key,
-                                            )));
-                                //final x = item.data![index].playlistSongs;
-                                // print(x);
-                                //list songs in playlist
-                                // final x = item.data![index].;
-                                // _audioRoom.addAllTo(RoomType.PLAYLIST, )
-                                //print(item.data![index].dateAdded);
-                                // final x = await _audioQuery.queryAudiosFrom(
-                                //     AudiosFromType.PLAYLIST,
-                                //     item.data![index].playlist);
-                                // print(x);
+            child: GetBuilder<Controller>(builder: (playlists) {
+              if (playlists.playlist.isEmpty) {
+                return const Center(
+                  child: Text('No Playlist Found'),
+                );
+              }
+              return ListView.separated(
+                  itemBuilder: (ctx, index) => Slidable(
+                        endActionPane: ActionPane(
+                          children: [
+                            SlidableAction(
+                              onPressed: (context) {
+                                dialog(context, playlists.playlist[index].key);
                               },
-                              contentPadding: EdgeInsets.only(left: 20),
-                              title: Text(
-                                item.data![index].playlistName,
-                              ),
-                              leading: Icon(Icons.music_note),
+                              backgroundColor: Colors.green.shade400,
+                              foregroundColor: Colors.white,
+                              icon: Icons.edit,
+                              label: 'Edit',
                             ),
+                            SlidableAction(
+                              onPressed: (context) {
+                                controller.deletePlaylist(
+                                    playlists.playlist[index].key);
+                              },
+                              backgroundColor: const Color(0xFFFE4A49),
+                              foregroundColor: Colors.white,
+                              icon: Icons.delete,
+                              label: 'Delete',
+                            ),
+                          ],
+                          motion: const ScrollMotion(),
+                        ),
+                        child: ListTile(
+                          onTap: () {
+                            //final x = item.data[index].key;
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (ctx) => PlaylistInfo(
+                                          title: playlists
+                                              .playlist[index].playlistName,
+                                          // songs: playlists.playlist[index].playlistSongs,
+                                          // playlistKey:
+                                          //     playlists.playlist[index].key,
+                                          playlistIndex: index,
+                                        )));
+                          },
+                          contentPadding: const EdgeInsets.only(left: 20),
+                          title: Text(
+                            playlists.playlist[index].playlistName,
                           ),
-                      separatorBuilder: (ctx, index) => Divider(),
-                      itemCount: item.data!.length);
-                })));
+                          leading: const Icon(Icons.music_note),
+                        ),
+                      ),
+                  separatorBuilder: (ctx, index) => const Divider(),
+                  itemCount: playlists.playlist.length);
+            })));
   }
 
   void dialog(BuildContext context, int key) {
@@ -141,19 +117,13 @@ class _PlaylistsState extends State<Playlists> {
                     onPressed: () {
                       Navigator.pop(ctx1);
                     },
-                    child: Text('Cancel')),
+                    child: const Text('Cancel')),
                 TextButton(
                     onPressed: () {
-                      setState(() {
-                        _audioRoom.renamePlaylist(
-                            key, playlistNameController.text);
-                      });
+                      controller.editPlaylist(key, playlistNameController.text);
                       Navigator.pop(ctx1);
-                      //createNewPlaylist(playlistNameController.text);
-
-                      // dialogBox(context);
                     },
-                    child: Text('Ok'))
+                    child: const Text('Ok'))
               ],
             ));
   }

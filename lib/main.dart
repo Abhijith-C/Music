@@ -1,11 +1,11 @@
+// ignore_for_file: implementation_imports
+
 import 'package:assets_audio_player/src/builders/player_builders_ext.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:newmusic/controller/controller.dart';
 import 'package:newmusic/controller/player.dart';
 import 'package:newmusic/screens/favourite.dart';
-import 'package:newmusic/screens/playScreen.dart';
 import 'package:newmusic/screens/playlists.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:on_audio_room/on_audio_room.dart';
@@ -13,9 +13,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'screens/homeScreen.dart';
 
 void main() async {
-  //await OnAudioRoom().initRoom(RoomType.FAVORITES);
   await OnAudioRoom().initRoom();
-  runApp(MyApp());
+  runApp(const MyApp());
+  permission();
 }
 
 void permission() {
@@ -28,13 +28,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // final Controller controller = Get.put(Controller());
-    permission();
-
-    // controller.fetchSongs();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: Home(),
+      home: const Home(),
     );
   }
 }
@@ -81,9 +78,7 @@ class _HomeState extends State<Home> {
         bottomSheet:
             assetsAudioPlayer.builderCurrent(builder: (context, playing) {
           final metas = playing.playlist.current.metas;
-          return (playing == null)
-              ? SizedBox()
-              : ListTile(
+          return ListTile(
                   leading: QueryArtworkWidget(
                     artworkBorder: BorderRadius.circular(12),
                     artworkFit: BoxFit.cover,
@@ -91,7 +86,7 @@ class _HomeState extends State<Home> {
                     type: ArtworkType.AUDIO,
                   ),
                   title: Text(metas.title!,
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           overflow: TextOverflow.ellipsis)),
                   subtitle: Text(metas.artist!),
@@ -102,7 +97,7 @@ class _HomeState extends State<Home> {
                           onPressed: () {
                             assetsAudioPlayer.previous();
                           },
-                          icon: Icon(Icons.skip_previous)),
+                          icon: const Icon(Icons.skip_previous)),
                       IconButton(onPressed: () {
                         assetsAudioPlayer.playOrPause();
                       }, icon: assetsAudioPlayer.builderIsPlaying(
@@ -121,7 +116,7 @@ class _HomeState extends State<Home> {
                           onPressed: () {
                             assetsAudioPlayer.next();
                           },
-                          icon: Icon(Icons.skip_next)),
+                          icon: const Icon(Icons.skip_next)),
                     ],
                   ),
                 );
