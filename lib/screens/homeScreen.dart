@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:newmusic/controller/controller.dart';
-import 'package:newmusic/controller/player.dart';
+import 'package:newmusic/functioins/player.dart';
 import 'package:newmusic/functioins/functions.dart';
 import 'package:newmusic/screens/playScreen.dart';
 import 'package:newmusic/screens/search.dart';
@@ -50,7 +50,7 @@ class HomeScreen extends StatelessWidget {
             child: GetBuilder<Controller>(
               init: Controller(),
               builder: (controll) {
-                return ListView.builder(
+                return controll.allSongs.isEmpty ? const Center(child: CircularProgressIndicator(),) : ListView.builder(
                   itemCount: controll.songs.length,
                   itemBuilder: (context, index) {
                     var song = controll.songs[index];

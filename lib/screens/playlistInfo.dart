@@ -2,7 +2,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
-import 'package:newmusic/controller/player.dart';
+import 'package:newmusic/functioins/player.dart';
 import 'package:newmusic/screens/playScreen.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
@@ -66,12 +66,24 @@ class PlaylistInfo extends StatelessWidget {
                     ),
                     child: ListTile(
                       onTap: () {
-                        // songListSelector: playlistItems.playlist[playlistIndex],
+                        SongModel? song;
+                        for (var item in playlistItems.allSongs) {
+                          if (item.title ==
+                              playlistItems.playlist[playlistIndex]
+                                  .playlistSongs[index].title) {
+                            song = item;
+                          }
+                        }
                         playFrom(playlistSong, index);
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (ctx) => PlayerScreen()));
+                            builder: (ctx) => PlayerScreen(
+                                  songListSelector: song,
+                                )));
                       },
-                      title: Text(songs[index].title),
+                      title: Text(
+                        songs[index].title,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       subtitle: Text(songs[index].artist!),
                       leading: QueryArtworkWidget(
                         id: songs[index].id,

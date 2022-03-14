@@ -14,10 +14,17 @@ void dialogBox(BuildContext context, int id, int inde, Audio song) {
               children: [
                 SimpleDialogOption(
                   onPressed: () {
-                    //Navigator.pop(context);
                     createPlaylist(ctx);
                   },
-                  child: const Text('New Playlist'),
+                  child: Column(
+                    children: const [
+                      Text(
+                        'Create New Playlist',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                      Divider()
+                    ],
+                  ),
                 ),
                 SimpleDialogOption(
                     child: SizedBox(

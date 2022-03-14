@@ -3,8 +3,7 @@
 import 'package:assets_audio_player/src/builders/player_builders_ext.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:newmusic/controller/player.dart';
+import 'package:newmusic/functioins/player.dart';
 import 'package:newmusic/screens/favourite.dart';
 import 'package:newmusic/screens/playlists.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -27,7 +26,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final Controller controller = Get.put(Controller());
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
@@ -61,7 +59,6 @@ class _HomeState extends State<Home> {
           height: 50,
           index: currentIndex,
           color: Colors.grey.shade200,
-          //animationDuration: Duration(milliseconds: 200),
           backgroundColor: Colors.grey.shade300,
           items: const <Widget>[
             Icon(Icons.favorite_outline, size: 30),
@@ -71,7 +68,6 @@ class _HomeState extends State<Home> {
           onTap: (index) {
             setState(() {
               currentIndex = index;
-              //print(currentIndex);
             });
           },
         ),

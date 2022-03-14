@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:get/get.dart';
 import 'package:newmusic/controller/controller.dart';
-import 'package:newmusic/controller/player.dart';
+import 'package:newmusic/functioins/player.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:on_audio_room/details/rooms/song_entity.dart';
+import 'package:on_audio_room/on_audio_room.dart';
 
 import '../functioins/functions.dart';
 
 class PlayerScreen extends StatelessWidget {
-  List<SongModel>? songListSelector;
+  SongModel? songListSelector;
   PlayerScreen({Key? key, this.songListSelector}) : super(key: key);
   final Controller controller = Get.put(Controller());
   Color blueColor = Colors.blue;
@@ -17,9 +19,9 @@ class PlayerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (songListSelector == null) {
-      songListSelector = controller.allSongs;
-    } else {}
+    // if (songListSelector == null) {
+    //   songListSelector = controller.allSongs;
+    // } else {}
     return Scaffold(
         appBar: AppBar(
           foregroundColor: Colors.black,
@@ -71,6 +73,7 @@ class PlayerScreen extends StatelessWidget {
                     ),
                     Text(
                       '${playing.playlist.current.metas.artist}',
+                      textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 16, color: Colors.grey[500]),
                     ),
                     const SizedBox(
@@ -158,8 +161,14 @@ class PlayerScreen extends StatelessWidget {
                                 if (isFav) {
                                   controll.deleteFav(key);
                                 } else {
-                                  controll.addToFav(
-                                      songListSelector![playing.index]);
+                                  if (songListSelector == null) {
+                                    controll.addToFav(
+                                        controll.allSongs[playing.index]);
+                                  } else {
+                                    controll.addToFav(songListSelector!);
+                                  }
+                                  // controll.addToFav(
+                                  //     controll.allSongs[playing.index]);
                                 }
                               },
                               icon: Icon(
