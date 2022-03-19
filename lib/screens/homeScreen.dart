@@ -82,7 +82,7 @@ class HomeScreen extends StatelessWidget {
                                           controll.songs[index]);
                                     },
                                     icon: const Icon(
-                                      Icons.add,
+                                      Icons.more_vert,
                                     ),
                                   )
                                 ],

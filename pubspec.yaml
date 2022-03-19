@@ -39,7 +39,6 @@ dependencies:
   hive_flutter: ^1.1.0
   on_audio_query: ^2.6.0
   on_audio_room: ^2.2.1+1
-  permission_handler: ^9.1.0
 
 dev_dependencies:
   flutter_launcher_icons: ^0.9.2

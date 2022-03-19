@@ -8,6 +8,7 @@ import 'package:newmusic/controller/controller.dart';
 import 'package:newmusic/functioins/player.dart';
 import 'package:newmusic/screens/favourite.dart';
 import 'package:newmusic/screens/playlists.dart';
+import 'package:newmusic/screens/spash.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:on_audio_room/on_audio_room.dart';
 import 'screens/homeScreen.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: Home(),
+      home: const SpalshScreen(),
     );
   }
 }
